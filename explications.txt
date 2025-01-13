@@ -178,3 +178,30 @@ Waitpid : Usage : Permet au processus parent d'attendre un processus fils partic
 					WUNTRACED : Si un processus fils est arrete (pas terminer) la fonction retourne aussi son etat.
 		  Si le processus fils est terminer avec succes, return PID du fils.
 	      Sinon return -1 que errno comprend.
+
+
+COMPRENDRE LA COMMANDE A REPLIQUER :
+
+< file1 cmd1 | cmd2 > file2
+
+< file1 = Redirection d'entree : Cela indique que le contenu du fichier file1 sera rediriger comme entree 
+								pour la commande suivant (ici cmd1) le contenu du fichier sera lu par
+								cmd1 plutoit que l'entree standard.
+cmd1 = premiere commande, qui est executee avec le contenu de file1 en entree.
+
+| = Pipe(tuyau) : le caractere | est un pipe qui permet de rediriger la sortie de cmd1 vers l'entree de la
+				commande suivante, ici cmd2. Cela signifie que la sortie de cmd1 devient l'entree de cmd2
+
+> file2 = Redirection de sortie : Cela signifie que la sortie de cmd2 sera redirigee vers le fichier file2.
+								Cela signifie que la sortie produite par cmd2 (au lieu d'aller dans le terminal) 
+								sera ecrite dans le fichier file2.
+								- Si file2 existe deja, il sera ecrase par la nouvelle sortie.
+								- Si file2 n'existe pas, il sera cree.
+
+Exemple : 
+	< file1 grep "example" | wc -l > file2
+
+< file1 : Le contenu de file1 est redirigé en entrée pour la commande grep.
+grep "example" : La commande grep recherche le mot "example" dans le contenu de file1.
+| wc -l : La sortie de grep (les lignes contenant "example") est envoyée en entrée de wc -l, qui compte le nombre de lignes.
+> file2 : Le résultat du comptage de wc -l (le nombre de lignes) est redirigé vers file2.

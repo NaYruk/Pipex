@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:03:50 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/13 12:18:32 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/01/14 16:18:50 by marcmilliot      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,22 @@
 # include <sys/wait.h>
 # include <stdio.h>
 
+typedef struct s_data
+{
+	int		fd[2];
+	int		fd_file;
+	int		status;
+	int		pid;
+	char	*cmd1_path;
+	char	*cmd2_path;
+	char	**arg_cmd1;
+	char	**arg_cmd2;
+}	t_data;
+
 /* Function called in the project */
+
+void	free_all(t_data *data);
+void	error(t_data *data);
+void	construct_commands(char **argv, t_data *data);
 
 #endif

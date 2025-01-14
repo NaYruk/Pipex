@@ -5,10 +5,10 @@ RESET = \033[0m
 
 CC = cc
 INCLUDE = -I./mandatory/includes 
-CFLAGS = -Wall -Wextra -Werror -g $(INCLUDE)
+CFLAGS = -Wall -Wextra -Werror $(INCLUDE)
 
 SRC_PATH = ./mandatory/sources
-SRC = $(SRC_PATH)/pipex.c
+SRC = $(SRC_PATH)/pipex.c $(SRC_PATH)/build_command.c
 
 OBJ = $(SRC:.c=.o)
 

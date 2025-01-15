@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
+/*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:08:44 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/14 16:20:51 by marcmilliot      ###   ########.fr       */
+/*   Updated: 2025/01/15 13:05:31 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 /* 
 	Function for check if the number of argument is good
-	and for check if the 2 files are possible to open.
+	and for check if the input file is possible to open.
 */
 
 void	potential_error(int argc, char **argv)
@@ -28,11 +28,6 @@ void	potential_error(int argc, char **argv)
 	if (access(argv[1], F_OK | R_OK) == -1)
 	{
 		perror("\033[31mERROR File1 \033[0m");
-		exit(EXIT_FAILURE);
-	}
-	if (access(argv[4], F_OK | W_OK) == -1)
-	{
-		perror("\033[31mERROR File2 \033[0m");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -61,6 +56,24 @@ t_data	*initialize_data(void)
 	return (data);
 }
 
+/*
+	Function for execute the first command.
+	- Open the infile file
+	- Create a new processus with fork
+	- if (data->pid == 0) = if the child process is active.
+	- dup2 for redirect the standard input in the infile file.
+	- dup2 for redirect the standard output in the fd[1] pipe.
+	fd[1] = fd for write in the pipe.
+	fd[0] = fd for read in the pipe.
+	- execve for execute the first command :
+		cmd1_path = path for the first command.
+		arg_cmd1 = argument for the first command.
+		NULL = environnement variable.
+	- else = parent process.
+	-waitpid = for wait the child process. the parent process is
+				stop while the child process is active.
+*/
+
 void	execute_first_command(char **argv, t_data *data)
 {
 	data->fd_file = open(argv[1], O_RDONLY);
@@ -85,10 +98,31 @@ void	execute_first_command(char **argv, t_data *data)
 	}
 }
 
+/*
+	Function for execute the second command.
+	- Open the outpput file, if the file exist erased the content of file
+		if the file not exist, create the output file
+	- Create a new processus with fork
+	- if (data->pid == 0) = if the child process is active.
+	- dup2 for redirect the standard input in the infile file.
+	- dup2 for redirect the standard output in the fd[0] pipe.
+	fd[1] = fd for write in the pipe.
+	fd[0] = fd for read in the pipe.
+	- execve for execute the first command :
+		cmd1_path = path for the first command.
+		arg_cmd1 = argument for the first command.
+		NULL = environnement variable.
+	- else = parent process.
+	-waitpid = for wait the child process. the parent process is
+				stop while the child process is active.
+*/
+
 void	execute_second_command(char **argv, t_data *data)
 {
-	data->fd_file = open(argv[4], O_WRONLY);
+	data->fd_file = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
 	if (data->fd_file == -1)
+		error(data);
+	if (access(argv[4], W_OK | R_OK | F_OK) == -1)
 		error(data);
 	data->pid = fork();
 	if (data->pid == 0)
@@ -109,7 +143,17 @@ void	execute_second_command(char **argv, t_data *data)
 	}
 }
 
-/* Principal function of Pipex project */
+/* 
+	Principal function of Pipex project 
+	- potential_error = function for detecte if argument error is present
+						and check if the infile
+						and outfile file are possible to open.
+	- initialize_data = function for initialize all variable at 0 or NULL
+	- construct_command = function for find the path for all command.
+			and for created a char ** for collected the command argument.
+	- execute_command = two function for execute the first and second command
+						with a pipe.
+*/
 
 int	main(int argc, char **argv)
 {

@@ -3,14 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   build_command.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
+/*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 10:05:46 by marcmilliot       #+#    #+#             */
-/*   Updated: 2025/01/14 16:25:34 by marcmilliot      ###   ########.fr       */
+/*   Updated: 2025/01/15 13:26:25 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
+
+/*
+	Function for free all data malloc in the program
+*/
 
 void	free_all(t_data *data)
 {
@@ -38,12 +42,20 @@ void	free_all(t_data *data)
 		free(data);
 }
 
+/*
+	Function for report an error and leave the program.
+*/
+
 void	error(t_data *data)
 {
 	perror("\033[31mERROR");
 	free_all(data);
 	exit(EXIT_FAILURE);
 }
+
+/*
+	Function for find the path command.
+*/
 
 char	*exec_find_path_command(char **arg_which, char *cmd_path, t_data *data)
 {
@@ -63,8 +75,8 @@ char	*exec_find_path_command(char **arg_which, char *cmd_path, t_data *data)
 		cmd_path = get_next_line(data->fd[0]);
 		if (!cmd_path)
 		{
-			ft_putstr_fd
-				("\033[31mERROR, command path is not found !\033[0m\n", 2);
+			ft_putstr_fd (arg_which[1], 2);
+			ft_putstr_fd (": command not found\n", 2);
 			free_all(data);
 			exit(EXIT_FAILURE);
 		}
@@ -73,6 +85,13 @@ char	*exec_find_path_command(char **arg_which, char *cmd_path, t_data *data)
 	}
 	return (cmd_path);
 }
+
+/*
+	Function for find the path for each command.
+	whith the command which.
+	which = command for find the command path.
+	ex : which ls : /usr/bin/ls
+*/
 
 char	*find_path_command(char *cmd, t_data *data)
 {
@@ -89,6 +108,12 @@ char	*find_path_command(char *cmd, t_data *data)
 	cmd_path = exec_find_path_command(arg_which, cmd_path, data);
 	return (cmd_path);
 }
+
+/* 
+	Function for construct the command : 
+	construct the path of each command.
+	construct the char ** argument of each command.
+*/
 
 void	construct_commands(char **argv, t_data *data)
 {

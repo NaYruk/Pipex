@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
+/*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:03:50 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/14 16:18:50 by marcmilliot      ###   ########.fr       */
+/*   Updated: 2025/01/15 11:14:30 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 # include <fcntl.h>
 # include <sys/wait.h>
 # include <stdio.h>
+
+/* Definiton of data structure */
 
 typedef struct s_data
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:03:50 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/15 11:14:30 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/01/16 17:38:20 by marcmilliot      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,14 @@ typedef struct s_data
 	char	*cmd2_path;
 	char	**arg_cmd1;
 	char	**arg_cmd2;
+	char	*path_line;
+	char	**envp;
 }	t_data;
 
 /* Function called in the project */
 
 void	free_all(t_data *data);
 void	error(t_data *data);
-void	construct_commands(char **argv, t_data *data);
+void	construct_commands(t_data *data, char **argv, char **envp);
 
 #endif

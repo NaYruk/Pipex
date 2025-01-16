@@ -3,123 +3,96 @@
 /*                                                        :::      ::::::::   */
 /*   build_command.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 10:05:46 by marcmilliot       #+#    #+#             */
-/*   Updated: 2025/01/15 13:26:25 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/01/16 18:58:39 by marcmilliot      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
 
-/*
-	Function for free all data malloc in the program
+/* 
+	Function for find the environnement variable
+	Search "PATH=" = environnement variable.
+	Delete "PATH="
+	split all path for make a char ** with each path of exec. 
 */
 
-void	free_all(t_data *data)
+void	find_envp(t_data *data, char **envp)
 {
-	int	i;
+	char	*tmp;
+	int		i;
 
-	i = -1;
-	if (data->cmd1_path)
-		free(data->cmd1_path);
-	if (data->cmd2_path)
-		free(data->cmd2_path);
-	if (data->arg_cmd1)
-	{
-		while (data->arg_cmd1[++i] != NULL)
-			free(data->arg_cmd1[i]);
-		free(data->arg_cmd1);
-	}
-	i = -1;
-	if (data->arg_cmd2)
-	{
-		while (data->arg_cmd2[++i] != NULL)
-			free(data->arg_cmd2[i]);
-		free(data->arg_cmd2);
-	}
-	if (data)
-		free(data);
-}
-
-/*
-	Function for report an error and leave the program.
-*/
-
-void	error(t_data *data)
-{
-	perror("\033[31mERROR");
-	free_all(data);
-	exit(EXIT_FAILURE);
-}
-
-/*
-	Function for find the path command.
-*/
-
-char	*exec_find_path_command(char **arg_which, char *cmd_path, t_data *data)
-{
-	if (data->pid == 0)
-	{
-		close (data->fd[0]);
-		dup2(data->fd[1], STDOUT_FILENO);
-		close (data->fd[1]);
-		if (execve("/usr/bin/which", arg_which, NULL) == -1)
-			error(data);
-	}
-	else
-	{
-		close(data->fd[1]);
-		if (waitpid(data->pid, &(data->status), 0) == -1)
-			error(data);
-		cmd_path = get_next_line(data->fd[0]);
-		if (!cmd_path)
-		{
-			ft_putstr_fd (arg_which[1], 2);
-			ft_putstr_fd (": command not found\n", 2);
-			free_all(data);
-			exit(EXIT_FAILURE);
-		}
-		cmd_path[ft_strlen(cmd_path) - 1] = '\0';
-		close (data->fd[0]);
-	}
-	return (cmd_path);
-}
-
-/*
-	Function for find the path for each command.
-	whith the command which.
-	which = command for find the command path.
-	ex : which ls : /usr/bin/ls
-*/
-
-char	*find_path_command(char *cmd, t_data *data)
-{
-	char	*cmd_path;
-	char	*arg_which[3];
-
-	arg_which[0] = "which";
-	arg_which[1] = cmd;
-	arg_which[2] = NULL;
-	cmd_path = NULL;
-	if (pipe(data->fd) == -1)
+	i = 0;
+	tmp = NULL;
+	data->path_line = envp[i];
+	while (!ft_strnstr(data->path_line, "PATH=", 5) && (envp[i] != NULL))
+		data->path_line = envp[++i];
+	data->path_line = ft_substr(data->path_line, 5,
+			ft_strlen(data->path_line));
+	data->envp = ft_split(data->path_line, ':');
+	if (!data->envp)
 		error(data);
-	data->pid = fork();
-	cmd_path = exec_find_path_command(arg_which, cmd_path, data);
-	return (cmd_path);
+	i = -1;
+	while (data->envp[++i] != NULL)
+	{
+		tmp = ft_add_back_string(data->envp[i], "/");
+		free(data->envp[i]);
+		data->envp[i] = tmp;
+	}
+	return ;
+}
+
+/*
+	find_command_path = function for add the name of the command
+						behind each path and test with access function
+						if a path is found and if it is executable.
+*/
+
+char	*find_command_path(t_data *data, char *command)
+{
+	int		i;
+	char	*tmp;
+
+	i = -1;
+	while (data->envp[++i] != NULL)
+	{
+		tmp = ft_add_back_string(data->envp[i], command);
+		if (access(tmp, F_OK | X_OK) == 0)
+			return (tmp);
+		free(tmp);
+	}
+	return (NULL);
 }
 
 /* 
-	Function for construct the command : 
-	construct the path of each command.
-	construct the char ** argument of each command.
+	Function for construct commands :
+	data->arg_cmd = command + arguments in a char **
+	data->cmd_path = path for execute the command.
+	
+	For that, we split arguments for make a char ** command + arguments
+	find_envp = function for find the path of environnement variables.
+				+ cut PATH= + put a / behind each path.
+	find_command_path = function for add the name of the command
+						behind each path and test with access function
+						if a path is found and if it is executable.
+						else error.
 */
 
-void	construct_commands(char **argv, t_data *data)
+void	construct_commands(t_data *data, char **argv, char **envp)
 {
 	data->arg_cmd1 = ft_split(argv[2], ' ');
-	data->cmd1_path = find_path_command(data->arg_cmd1[0], data);
+	if (!data->arg_cmd1)
+		error(data);
 	data->arg_cmd2 = ft_split(argv[3], ' ');
-	data->cmd2_path = find_path_command(data->arg_cmd2[0], data);
-	return ;
+	if (!data->arg_cmd2)
+		error(data);
+	find_envp(data, envp);
+	data->cmd1_path = find_command_path(data, data->arg_cmd1[0]);
+	if (!data->cmd1_path)
+		error(data);
+	data->cmd2_path = find_command_path(data, data->arg_cmd2[0]);
+	if (!data->cmd2_path)
+		error(data);
 }

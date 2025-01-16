@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:08:44 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/15 13:05:31 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/01/16 18:55:12 by marcmilliot      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,13 @@ void	potential_error(int argc, char **argv)
 {
 	if (argc != 5)
 	{
-		ft_putstr_fd("\033[31mERROR, need 5 argument\033[0m\n", 2);
+		ft_putstr_fd("ERROR, need 5 argument", 2);
 		ft_putstr_fd("./pipex file1 cmd1 cmd2 file2\n", 2);
 		exit(EXIT_FAILURE);
 	}
 	if (access(argv[1], F_OK | R_OK) == -1)
 	{
-		perror("\033[31mERROR File1 \033[0m");
+		perror("ERROR");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -41,13 +41,15 @@ t_data	*initialize_data(void)
 	data = malloc(sizeof(t_data));
 	if (!data)
 	{
-		ft_putstr_fd("\033[31mERROR, malloc error\033[0m\n", 2);
+		ft_putstr_fd("ERROR, malloc error\n", 2);
 		exit(EXIT_FAILURE);
 	}
 	data->cmd1_path = NULL;
 	data->cmd2_path = NULL;
 	data->arg_cmd1 = NULL;
 	data->arg_cmd2 = NULL;
+	data->path_line = NULL;
+	data->envp = NULL;
 	data->fd[0] = 0;
 	data->fd[1] = 0;
 	data->fd_file = 0;
@@ -155,13 +157,13 @@ void	execute_second_command(char **argv, t_data *data)
 						with a pipe.
 */
 
-int	main(int argc, char **argv)
+int	main(int argc, char **argv, char **envp)
 {
 	t_data	*data;
 
 	potential_error(argc, argv);
 	data = initialize_data();
-	construct_commands(argv, data);
+	construct_commands(data, argv, envp);
 	if (pipe(data->fd) == -1)
 		error(data);
 	execute_first_command(argv, data);

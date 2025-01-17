@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
+/*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:03:50 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/16 17:38:20 by marcmilliot      ###   ########.fr       */
+/*   Updated: 2025/01/17 19:34:22 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,18 +31,22 @@ typedef struct s_data
 	int		fd_file;
 	int		status;
 	int		pid;
-	char	*cmd1_path;
-	char	*cmd2_path;
-	char	**arg_cmd1;
-	char	**arg_cmd2;
+	int		argv_index;
+	int		number_of_command;
+	char	*cmd_path;
+	char	**arg_cmd;
 	char	*path_line;
-	char	**envp;
+	char	**env_var;
 }	t_data;
 
 /* Function called in the project */
 
 void	free_all(t_data *data);
 void	error(t_data *data);
-void	construct_commands(t_data *data, char **argv, char **envp);
+void	construct_commands(t_data *data, char **argv);
+void	find_envp(t_data *data, char **envp);
+void	execute_first_command(char **argv, t_data *data);
+void	execute_last_command(char **argv, t_data *data);
+void	execute_commands(t_data *data);
 
 #endif

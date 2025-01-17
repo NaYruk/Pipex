@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   build_command.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
+/*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 10:05:46 by marcmilliot       #+#    #+#             */
-/*   Updated: 2025/01/16 18:58:39 by marcmilliot      ###   ########.fr       */
+/*   Updated: 2025/01/17 19:33:23 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,15 @@ void	find_envp(t_data *data, char **envp)
 		data->path_line = envp[++i];
 	data->path_line = ft_substr(data->path_line, 5,
 			ft_strlen(data->path_line));
-	data->envp = ft_split(data->path_line, ':');
-	if (!data->envp)
+	data->env_var = ft_split(data->path_line, ':');
+	if (!data->env_var)
 		error(data);
 	i = -1;
-	while (data->envp[++i] != NULL)
+	while (data->env_var[++i] != NULL)
 	{
-		tmp = ft_add_back_string(data->envp[i], "/");
-		free(data->envp[i]);
-		data->envp[i] = tmp;
+		tmp = ft_add_back_string(data->env_var[i], "/");
+		free(data->env_var[i]);
+		data->env_var[i] = tmp;
 	}
 	return ;
 }
@@ -56,9 +56,9 @@ char	*find_command_path(t_data *data, char *command)
 	char	*tmp;
 
 	i = -1;
-	while (data->envp[++i] != NULL)
+	while (data->env_var[++i] != NULL)
 	{
-		tmp = ft_add_back_string(data->envp[i], command);
+		tmp = ft_add_back_string(data->env_var[i], command);
 		if (access(tmp, F_OK | X_OK) == 0)
 			return (tmp);
 		free(tmp);
@@ -80,19 +80,13 @@ char	*find_command_path(t_data *data, char *command)
 						else error.
 */
 
-void	construct_commands(t_data *data, char **argv, char **envp)
+void	construct_commands(t_data *data, char **argv)
 {
-	data->arg_cmd1 = ft_split(argv[2], ' ');
-	if (!data->arg_cmd1)
+	data->arg_cmd = ft_split(argv[data->argv_index], ' ');
+	if (!data->arg_cmd)
 		error(data);
-	data->arg_cmd2 = ft_split(argv[3], ' ');
-	if (!data->arg_cmd2)
+	data->cmd_path = find_command_path(data, data->arg_cmd[0]);
+	if (!data->cmd_path)
 		error(data);
-	find_envp(data, envp);
-	data->cmd1_path = find_command_path(data, data->arg_cmd1[0]);
-	if (!data->cmd1_path)
-		error(data);
-	data->cmd2_path = find_command_path(data, data->arg_cmd2[0]);
-	if (!data->cmd2_path)
-		error(data);
+	data->argv_index++;
 }

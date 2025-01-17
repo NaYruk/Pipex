@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   utils_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
+/*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/16 18:57:23 by marcmilliot       #+#    #+#             */
-/*   Updated: 2025/01/16 19:00:01 by marcmilliot      ###   ########.fr       */
+/*   Updated: 2025/01/17 18:21:43 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,25 +17,18 @@ void	free_all_2(t_data *data)
 	int	i;
 
 	i = -1;
-	if (data->arg_cmd1)
+	if (data->arg_cmd)
 	{
-		while (data->arg_cmd1[++i] != NULL)
-			free(data->arg_cmd1[i]);
-		free(data->arg_cmd1);
+		while (data->arg_cmd[++i] != NULL)
+			free(data->arg_cmd[i]);
+		free(data->arg_cmd);
 	}
 	i = -1;
-	if (data->arg_cmd2)
+	if (data->env_var)
 	{
-		while (data->arg_cmd2[++i] != NULL)
-			free(data->arg_cmd2[i]);
-		free(data->arg_cmd2);
-	}
-	i = -1;
-	if (data->envp)
-	{
-		while (data->envp[++i] != NULL)
-			free(data->envp[i]);
-		free(data->envp);
+		while (data->env_var[++i] != NULL)
+			free(data->env_var[i]);
+		free(data->env_var);
 	}
 	if (data)
 		free(data);
@@ -49,10 +42,8 @@ void	free_all(t_data *data)
 {
 	if (data->path_line)
 		free(data->path_line);
-	if (data->cmd1_path)
-		free(data->cmd1_path);
-	if (data->cmd2_path)
-		free(data->cmd2_path);
+	if (data->cmd_path)
+		free(data->cmd_path);
 	free_all_2(data);
 }
 

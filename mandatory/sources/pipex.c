@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
+/*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:08:44 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/16 18:55:12 by marcmilliot      ###   ########.fr       */
+/*   Updated: 2025/01/17 19:42:45 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 void	potential_error(int argc, char **argv)
 {
-	if (argc != 5)
+	if (argc < 5)
 	{
 		ft_putstr_fd("ERROR, need 5 argument", 2);
 		ft_putstr_fd("./pipex file1 cmd1 cmd2 file2\n", 2);
@@ -44,105 +44,17 @@ t_data	*initialize_data(void)
 		ft_putstr_fd("ERROR, malloc error\n", 2);
 		exit(EXIT_FAILURE);
 	}
-	data->cmd1_path = NULL;
-	data->cmd2_path = NULL;
-	data->arg_cmd1 = NULL;
-	data->arg_cmd2 = NULL;
+	data->cmd_path = NULL;
+	data->arg_cmd = NULL;
 	data->path_line = NULL;
-	data->envp = NULL;
 	data->fd[0] = 0;
 	data->fd[1] = 0;
 	data->fd_file = 0;
 	data->pid = 0;
 	data->status = 0;
+	data->argv_index = 2;
+	data->number_of_command = 0;
 	return (data);
-}
-
-/*
-	Function for execute the first command.
-	- Open the infile file
-	- Create a new processus with fork
-	- if (data->pid == 0) = if the child process is active.
-	- dup2 for redirect the standard input in the infile file.
-	- dup2 for redirect the standard output in the fd[1] pipe.
-	fd[1] = fd for write in the pipe.
-	fd[0] = fd for read in the pipe.
-	- execve for execute the first command :
-		cmd1_path = path for the first command.
-		arg_cmd1 = argument for the first command.
-		NULL = environnement variable.
-	- else = parent process.
-	-waitpid = for wait the child process. the parent process is
-				stop while the child process is active.
-*/
-
-void	execute_first_command(char **argv, t_data *data)
-{
-	data->fd_file = open(argv[1], O_RDONLY);
-	if (data->fd_file == -1)
-		error(data);
-	data->pid = fork();
-	if (data->pid == 0)
-	{
-		dup2(data->fd_file, STDIN_FILENO);
-		close (data->fd_file);
-		close (data->fd[0]);
-		dup2(data->fd[1], STDOUT_FILENO);
-		close (data->fd[1]);
-		if (execve(data->cmd1_path, data->arg_cmd1, NULL) == -1)
-			error(data);
-	}
-	else
-	{
-		close (data->fd[1]);
-		if (waitpid(data->pid, &(data->status), 0) == -1)
-			error(data);
-	}
-}
-
-/*
-	Function for execute the second command.
-	- Open the outpput file, if the file exist erased the content of file
-		if the file not exist, create the output file
-	- Create a new processus with fork
-	- if (data->pid == 0) = if the child process is active.
-	- dup2 for redirect the standard input in the infile file.
-	- dup2 for redirect the standard output in the fd[0] pipe.
-	fd[1] = fd for write in the pipe.
-	fd[0] = fd for read in the pipe.
-	- execve for execute the first command :
-		cmd1_path = path for the first command.
-		arg_cmd1 = argument for the first command.
-		NULL = environnement variable.
-	- else = parent process.
-	-waitpid = for wait the child process. the parent process is
-				stop while the child process is active.
-*/
-
-void	execute_second_command(char **argv, t_data *data)
-{
-	data->fd_file = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
-	if (data->fd_file == -1)
-		error(data);
-	if (access(argv[4], W_OK | R_OK | F_OK) == -1)
-		error(data);
-	data->pid = fork();
-	if (data->pid == 0)
-	{
-		dup2(data->fd[0], STDIN_FILENO);
-		close (data->fd[0]);
-		dup2(data->fd_file, STDOUT_FILENO);
-		close (data->fd_file);
-		if (execve(data->cmd2_path, data->arg_cmd2, NULL) == -1)
-			error(data);
-	}
-	else
-	{
-		close (data->fd_file);
-		close (data->fd[0]);
-		if (waitpid(data->pid, &(data->status), 0) == -1)
-			error(data);
-	}
 }
 
 /* 
@@ -163,11 +75,37 @@ int	main(int argc, char **argv, char **envp)
 
 	potential_error(argc, argv);
 	data = initialize_data();
-	construct_commands(data, argv, envp);
+	data->number_of_command = argc - 3;
+	find_envp(data, envp);
+	construct_commands(data, argv);
+	data->number_of_command--;
 	if (pipe(data->fd) == -1)
 		error(data);
 	execute_first_command(argv, data);
-	execute_second_command(argv, data);
+	while (data->number_of_command > 1)
+	{
+		construct_commands(data, argv);
+		data->number_of_command--;
+	}
+	construct_commands(data, argv);
+	execute_last_command(argv, data);
 	free_all(data);
 	return (0);
 }
+
+
+
+
+/*Pour gerer plusieurs pipe, il faudra traiter autant de commandes que demander. 
+	Pour cela, il faut faire la creation des commandes independamment a chaque fois,
+	faire commande par commande, jusqu a que argc <= argc - 1;
+	Trouver le path de la commande actuelle, puis executer la commande. 
+	Puis retrouver le path de la commande suivante et donner en entree la commande precedente.
+	Puis quand on est a la derniere commande, rediriger dans le fichier donner en argument.
+
+	
+
+	Pour lundi, cree un systeme pour pouvoir cree plusieurs pipe, un pipe precedant et un pipe actuel.
+	Le precedant aura les infos de celui d avant, le nouveau processus prendra en entree le pipe precedant
+	et en sorti renverra dans son propre pipe, puis le pipe actuel devient le precedant et ainsi de suite.
+*/

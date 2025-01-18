@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:08:44 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/18 15:30:33 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/01/18 23:31:45 by marcmilliot      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,10 @@ t_data	*initialize_data(void)
 	data->path_line = NULL;
 	data->fd[0] = 0;
 	data->fd[1] = 0;
+	data->old_fd[0] = 0;
+	data->old_fd[1] = 0;
+	data->curr_fd[0] = 0;
+	data->curr_fd[1] = 0;
 	data->fd_file = 0;
 	data->pid = 0;
 	data->status = 0;
@@ -79,13 +83,13 @@ int	main(int argc, char **argv, char **envp)
 	find_envp(data, envp);
 	construct_commands(data, argv);
 	data->number_of_command--;
-	if (pipe(data->fd) == -1)
-		error(data);
 	execute_first_command(argv, data);
 	while (data->number_of_command > 1)
 	{
+		data->old_fd[0] = data->curr_fd[0];
+		data->old_fd[1] = data->curr_fd[1];
 		construct_commands(data, argv);
-		//execute_commands(data);
+		execute_commands(data);
 		data->number_of_command--;
 	}
 	construct_commands(data, argv);
@@ -108,4 +112,8 @@ int	main(int argc, char **argv, char **envp)
 
 	Pour lundi, cree un systeme pour pouvoir cree plusieurs pipe, un pipe precedant et un pipe actuel.
 	Le precedant aura les infos de celui d avant, le nouveau processus prendra en entree le pipe precedant
-	et en sorti renverra dans son propre pipe, puis le pipe actuel devient le precedant et ainsi de suite.*/
+	et en sorti renverra dans son propre pipe, puis le pipe actuel devient le precedant et ainsi de suite.
+
+		
+	
+*/

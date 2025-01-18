@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_commands.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 18:18:58 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/18 15:30:09 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/01/18 23:41:02 by marcmilliot      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,26 +32,27 @@
 
 void	execute_first_command(char **argv, t_data *data)
 {
-	data->fd_file = open(argv[1], O_RDONLY);
-	if (data->fd_file == -1)
+	if (pipe(data->curr_fd) == -1)
 		error(data);
 	data->pid = fork();
 	if (data->pid == 0)
 	{
+		data->fd_file = open(argv[1], O_RDONLY);
+		if (data->fd_file == -1)
+			error(data);
 		if (dup2(data->fd_file, STDIN_FILENO) == -1)
 			error(data);
 		close (data->fd_file);
-		if (dup2(data->fd[1], STDOUT_FILENO) == -1)
+		if (dup2(data->curr_fd[1], STDOUT_FILENO) == -1)
 			error(data);
-		close (data->fd[0]);
-		close (data->fd[1]);
+		close (data->curr_fd[0]);
+		close (data->curr_fd[1]);
 		if (execve(data->cmd_path, data->arg_cmd, NULL) == -1)
 			error(data);
 	}
 	else
 	{
-		close (data->fd[1]);
-		close (data->fd_file);
+		close (data->curr_fd[1]);
 		if (waitpid(data->pid, &(data->status), 0) == -1)
 			error(data);
 	}
@@ -78,25 +79,26 @@ void	execute_first_command(char **argv, t_data *data)
 
 void	execute_last_command(char **argv, t_data *data)
 {
-	data->fd_file = open(argv[data->argv_index], O_WRONLY | O_CREAT | O_TRUNC, 0777);
-	if (data->fd_file == -1)
-		error(data);
 	data->pid = fork();
 	if (data->pid == 0)
 	{
-		if (dup2(data->fd[0], STDIN_FILENO) == -1)
+		data->fd_file = open(argv[data->argv_index], O_WRONLY | O_CREAT | O_TRUNC, 0777);
+		if (data->fd_file == -1)
 			error(data);
-		close (data->fd[0]);
+		if (dup2(data->curr_fd[0], STDIN_FILENO) == -1)
+			error(data);
+		close (data->curr_fd[0]);
 		if (dup2(data->fd_file, STDOUT_FILENO) == -1)
 			error(data);
 		close (data->fd_file);
-		close (data->fd[1]);
+		close (data->curr_fd[1]);
 		if (execve(data->cmd_path, data->arg_cmd, NULL) == -1)
 			error(data);
 	}
 	else
 	{
-		close (data->fd[0]);
+		close (data->curr_fd[0]);
+		//close (data->curr_fd[1]);
 		if (waitpid(data->pid, &(data->status), 0) == -1)
 			error(data);
 	}
@@ -104,20 +106,26 @@ void	execute_last_command(char **argv, t_data *data)
 
 void	execute_commands(t_data *data)
 {
+	if (pipe(data->curr_fd) == -1)
+		error(data);
 	data->pid = fork();
 	if (data->pid == 0)
 	{
-		if (dup2(data->fd[0], STDIN_FILENO) == -1)
+		if (dup2(data->old_fd[0], STDIN_FILENO) == -1)
 			error(data);
-		close (data->fd[0]);
-		if (dup2(data->fd[1], STDOUT_FILENO) == -1)
+		close (data->old_fd[0]);
+		if (dup2(data->curr_fd[1], STDOUT_FILENO) == -1)
 			error(data);
-		close (data->fd[1]);
+		close (data->curr_fd[1]);
+		close (data->curr_fd[0]);
+		close (data->old_fd[1]);
 		if (execve(data->cmd_path, data->arg_cmd, NULL) == -1)
 			error(data);
 	}
 	else
 	{
+		close(data->old_fd[0]);
+		close (data->curr_fd[1]);
 		if (waitpid(data->pid, &(data->status), 0) == -1)
 			error(data);
 	}

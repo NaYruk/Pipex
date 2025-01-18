@@ -6,7 +6,7 @@
 /*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 18:18:58 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/17 19:34:51 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/01/18 15:30:09 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ void	execute_first_command(char **argv, t_data *data)
 	}
 	else
 	{
+		close (data->fd[1]);
 		close (data->fd_file);
 		if (waitpid(data->pid, &(data->status), 0) == -1)
 			error(data);
@@ -89,13 +90,13 @@ void	execute_last_command(char **argv, t_data *data)
 		if (dup2(data->fd_file, STDOUT_FILENO) == -1)
 			error(data);
 		close (data->fd_file);
+		close (data->fd[1]);
 		if (execve(data->cmd_path, data->arg_cmd, NULL) == -1)
 			error(data);
 	}
 	else
 	{
 		close (data->fd[0]);
-		close (data->fd[1]);
 		if (waitpid(data->pid, &(data->status), 0) == -1)
 			error(data);
 	}

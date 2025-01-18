@@ -6,7 +6,7 @@
 /*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:08:44 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/17 19:42:45 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/01/18 15:30:33 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ int	main(int argc, char **argv, char **envp)
 	while (data->number_of_command > 1)
 	{
 		construct_commands(data, argv);
+		//execute_commands(data);
 		data->number_of_command--;
 	}
 	construct_commands(data, argv);
@@ -96,16 +97,15 @@ int	main(int argc, char **argv, char **envp)
 
 
 
-/*Pour gerer plusieurs pipe, il faudra traiter autant de commandes que demander. 
+/*  Pour gerer plusieurs pipe, il faudra traiter autant de commandes que demander. 
 	Pour cela, il faut faire la creation des commandes independamment a chaque fois,
 	faire commande par commande, jusqu a que argc <= argc - 1;
 	Trouver le path de la commande actuelle, puis executer la commande. 
 	Puis retrouver le path de la commande suivante et donner en entree la commande precedente.
 	Puis quand on est a la derniere commande, rediriger dans le fichier donner en argument.
 
-	
+
 
 	Pour lundi, cree un systeme pour pouvoir cree plusieurs pipe, un pipe precedant et un pipe actuel.
 	Le precedant aura les infos de celui d avant, le nouveau processus prendra en entree le pipe precedant
-	et en sorti renverra dans son propre pipe, puis le pipe actuel devient le precedant et ainsi de suite.
-*/
+	et en sorti renverra dans son propre pipe, puis le pipe actuel devient le precedant et ainsi de suite.*/

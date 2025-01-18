@@ -6,7 +6,7 @@
 /*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 10:05:46 by marcmilliot       #+#    #+#             */
-/*   Updated: 2025/01/17 19:33:23 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/01/18 15:37:49 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,20 @@ char	*find_command_path(t_data *data, char *command)
 
 void	construct_commands(t_data *data, char **argv)
 {
+	int	i;
+
+	i = -1;
+	if (data->arg_cmd)
+	{
+		while (data->arg_cmd[++i] != NULL)
+			free(data->arg_cmd[i]);
+		free(data->arg_cmd);
+	}
 	data->arg_cmd = ft_split(argv[data->argv_index], ' ');
 	if (!data->arg_cmd)
 		error(data);
+	if (data->cmd_path)
+		free(data->cmd_path);
 	data->cmd_path = find_command_path(data, data->arg_cmd[0]);
 	if (!data->cmd_path)
 		error(data);

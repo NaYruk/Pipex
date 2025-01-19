@@ -6,7 +6,7 @@
 /*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:08:44 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/18 23:31:45 by marcmilliot      ###   ########.fr       */
+/*   Updated: 2025/01/19 13:17:29 by marcmilliot      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,6 @@ t_data	*initialize_data(void)
 	data->cmd_path = NULL;
 	data->arg_cmd = NULL;
 	data->path_line = NULL;
-	data->fd[0] = 0;
-	data->fd[1] = 0;
 	data->old_fd[0] = 0;
 	data->old_fd[1] = 0;
 	data->curr_fd[0] = 0;

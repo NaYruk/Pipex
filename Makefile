@@ -38,7 +38,7 @@ fclean:
 		@echo "Cleaning $(YELLOW)Pipex$(RESET) object files..."
 		@rm -rf $(OBJ_DIR)
 		@rm -rf $(NAME)
-		@echo "Cleaning $(YELLOW)Executable$(RESET) BONUS file..."
+		@echo "Cleaning $(YELLOW)Executable$(RESET) ./pipex file..."
 		@$(MAKE) -C $(LIBFT_DIR) fclean --no-print-directory
 		@echo "Cleaning $(YELLOW)Libft.a$(RESET) static library file..."
 

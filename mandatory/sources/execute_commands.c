@@ -6,7 +6,7 @@
 /*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 18:18:58 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/18 23:41:02 by marcmilliot      ###   ########.fr       */
+/*   Updated: 2025/01/19 13:28:03 by marcmilliot      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,6 @@ void	execute_last_command(char **argv, t_data *data)
 	else
 	{
 		close (data->curr_fd[0]);
-		//close (data->curr_fd[1]);
 		if (waitpid(data->pid, &(data->status), 0) == -1)
 			error(data);
 	}

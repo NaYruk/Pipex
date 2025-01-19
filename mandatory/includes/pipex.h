@@ -6,7 +6,7 @@
 /*   By: marcmilliot <marcmilliot@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:03:50 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/18 23:12:49 by marcmilliot      ###   ########.fr       */
+/*   Updated: 2025/01/19 13:17:35 by marcmilliot      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@
 
 typedef struct s_data
 {
-	int		fd[2];
 	int		old_fd[2];
 	int		curr_fd[2];
 	int		fd_file;

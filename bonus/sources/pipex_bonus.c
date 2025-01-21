@@ -6,7 +6,7 @@
 /*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:08:44 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/21 10:03:55 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/01/21 13:09:44 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,18 +80,18 @@ int	main(int argc, char **argv, char **envp)
 	data->number_of_command = argc - 3;
 	find_envp(data, envp);
 	construct_commands(data, argv);
-	execute_first_command(argv, data);
+	execute_first_command(argv, data, envp);
 	data->number_of_command--;
 	while (data->number_of_command > 1)
 	{
 		data->old_fd[0] = data->curr_fd[0];
 		data->old_fd[1] = data->curr_fd[1];
 		construct_commands(data, argv);
-		execute_commands(data);
+		execute_commands(data, envp);
 		data->number_of_command--;
 	}
 	construct_commands(data, argv);
-	execute_last_command(argv, data);
+	execute_last_command(argv, data, envp); 
 	free_all(data);
 	return (0);
 }

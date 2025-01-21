@@ -6,7 +6,7 @@
 /*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 18:18:58 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/21 10:03:53 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/01/21 13:10:25 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@
 				stop while the child process is active.
 */
 
-void	execute_first_command(char **argv, t_data *data)
+void	execute_first_command(char **argv, t_data *data, char **envp)
 {
 	if (pipe(data->curr_fd) == -1)
 		error(data);
@@ -47,12 +47,11 @@ void	execute_first_command(char **argv, t_data *data)
 			error(data);
 		close (data->curr_fd[0]);
 		close (data->curr_fd[1]);
-		if (execve(data->cmd_path, data->arg_cmd, NULL) == -1)
+		if (execve(data->cmd_path, data->arg_cmd, envp) == -1)
 			error(data);
 	}
 	else
 	{
-		close (data->curr_fd[1]);
 		if (waitpid(data->pid, &(data->status), 0) == -1)
 			error(data);
 	}
@@ -77,7 +76,7 @@ void	execute_first_command(char **argv, t_data *data)
 				stop while the child process is active.
 */
 
-void	execute_last_command(char **argv, t_data *data)
+void	execute_last_command(char **argv, t_data *data, char **envp)
 {
 	data->pid = fork();
 	if (data->pid == 0)
@@ -93,18 +92,19 @@ void	execute_last_command(char **argv, t_data *data)
 			error(data);
 		close (data->fd_file);
 		close (data->curr_fd[1]);
-		if (execve(data->cmd_path, data->arg_cmd, NULL) == -1)
+		if (execve(data->cmd_path, data->arg_cmd, envp) == -1)
 			error(data);
 	}
 	else
 	{
+		close (data->curr_fd[1]);
 		close (data->curr_fd[0]);
 		if (waitpid(data->pid, &(data->status), 0) == -1)
 			error(data);
 	}
 }
 
-void	execute_commands(t_data *data)
+void	execute_commands(t_data *data, char **envp)
 {
 	if (pipe(data->curr_fd) == -1)
 		error(data);
@@ -119,14 +119,16 @@ void	execute_commands(t_data *data)
 		close (data->curr_fd[1]);
 		close (data->curr_fd[0]);
 		close (data->old_fd[1]);
-		if (execve(data->cmd_path, data->arg_cmd, NULL) == -1)
+		if (execve(data->cmd_path, data->arg_cmd, envp) == -1)
 			error(data);
 	}
 	else
 	{
 		close(data->old_fd[0]);
+		close(data->old_fd[1]);
 		close (data->curr_fd[1]);
 		if (waitpid(data->pid, &(data->status), 0) == -1)
 			error(data);
 	}
 }
+

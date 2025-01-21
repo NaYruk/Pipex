@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:08:44 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/21 09:59:18 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/01/21 10:03:55 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/pipex.h"
+#include "../includes/pipex_bonus.h"
 
 /* 
 	Function for check if the number of argument is good
@@ -19,9 +19,9 @@
 
 void	potential_error(int argc, char **argv)
 {
-	if (argc != 5)
+	if (argc < 5)
 	{
-		ft_putstr_fd("ERROR, need 5 argument", 2);
+		ft_putstr_fd("ERROR, need Minimum of 5 argument", 2);
 		ft_putstr_fd("./pipex file1 cmd1 cmd2 file2\n", 2);
 		exit(EXIT_FAILURE);
 	}

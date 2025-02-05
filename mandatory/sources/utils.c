@@ -6,7 +6,7 @@
 /*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/16 18:57:23 by marcmilliot       #+#    #+#             */
-/*   Updated: 2025/01/18 15:37:45 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/02/05 12:54:01 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,18 @@ void	free_all(t_data *data)
 void	error(t_data *data)
 {
 	perror("ERROR");
+	free_all(data);
+	exit(EXIT_FAILURE);
+}
+
+void	command_not_found(t_data *data)
+{
+	int	len;
+
+	len = ft_strlen(data->arg_cmd[0]);
+	write(2, "zsh: command not found: ", 24);
+	write(2, data->arg_cmd[0], len);
+	write(2, "\n", 1);
 	free_all(data);
 	exit(EXIT_FAILURE);
 }

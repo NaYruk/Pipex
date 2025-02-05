@@ -6,7 +6,7 @@
 /*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:08:44 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/21 13:09:44 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/02/05 12:39:21 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ int	main(int argc, char **argv, char **envp)
 		data->number_of_command--;
 	}
 	construct_commands(data, argv);
-	execute_last_command(argv, data, envp); 
+	execute_last_command(argv, data, envp);
 	free_all(data);
 	return (0);
 }

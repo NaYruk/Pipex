@@ -6,7 +6,7 @@
 /*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:03:50 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/21 13:09:55 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/02/05 12:53:12 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ typedef struct s_data
 
 void	free_all(t_data *data);
 void	error(t_data *data);
+void	command_not_found(t_data *data);
 void	construct_commands(t_data *data, char **argv);
 void	find_envp(t_data *data, char **envp);
 void	execute_first_command(char **argv, t_data *data, char **envp);

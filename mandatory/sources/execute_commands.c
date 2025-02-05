@@ -6,7 +6,7 @@
 /*   By: mmilliot <mmilliot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 18:18:58 by mmilliot          #+#    #+#             */
-/*   Updated: 2025/01/21 13:10:08 by mmilliot         ###   ########.fr       */
+/*   Updated: 2025/02/05 12:06:05 by mmilliot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,6 @@ void	execute_commands(t_data *data, char **envp)
 	{
 		close(data->old_fd[0]);
 		close(data->old_fd[1]);
-		close (data->curr_fd[1]);
 		if (waitpid(data->pid, &(data->status), 0) == -1)
 			error(data);
 	}
